@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "IOC Quickdraw",
+  "description": "A rapid-fire OSINT launcher for cybersecurity analysts. Instantly pivot on IPs, domains, hashes, and more.",
+  "version": "1.0",
+  "icons": {
+    "48": "icons/logo_48.png",
+    "128": "icons/logo_128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "options.html",
+  "permissions": [
+    "contextMenus",
+    "background",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": []
+}
