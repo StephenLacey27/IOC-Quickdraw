@@ -1,4 +1,4 @@
-
+![IOC Quickdraw Banner](images/banner.png)
 # IOC Quickdraw
 
 IOC Quickdraw is a fast, secure, and highly customizable OSINT Chrome and Firefox extension for cybersecurity professionals. It allows you to quickly pivot on indicators of compromise (IOCs) such as IPs, domains, hashes, URLs, and emails using a growing library of investigation tools.
