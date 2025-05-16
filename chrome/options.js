@@ -1,26 +1,31 @@
+
 document.addEventListener('DOMContentLoaded', () => {
-  // Load saved preferences
-  chrome.storage.local.get(['quickdrawPrefs'], (result) => {
-    const prefs = result.quickdrawPrefs || {};
-    document.querySelectorAll('input[type="checkbox"]').forEach((box) => {
-      const type = box.dataset.type;
-      const val = box.value;
-      box.checked = prefs[type]?.includes(val);
+  const form = document.getElementById('options-form');
+  const checkboxes = Array.from(form.querySelectorAll('input[type="checkbox"]'));
+
+  // Load saved settings
+  chrome.storage.sync.get('iocSelections', (data) => {
+    const saved = data.iocSelections || {};
+    checkboxes.forEach(box => {
+      if (saved[box.id]) {
+        box.checked = true;
+      }
     });
   });
 
-  // Save preferences
-  document.getElementById('save').addEventListener('click', () => {
-    const prefs = {};
-    document.querySelectorAll('input[type="checkbox"]').forEach((box) => {
-      if (!prefs[box.dataset.type]) prefs[box.dataset.type] = [];
-      if (box.checked) prefs[box.dataset.type].push(box.value);
+  // Save settings
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const selections = {};
+    checkboxes.forEach(box => {
+      selections[box.id] = box.checked;
     });
-    chrome.storage.local.set({ quickdrawPrefs: prefs }, () => {
-      document.getElementById('status').textContent = 'Saved!';
-      setTimeout(() => {
-        document.getElementById('status').textContent = '';
-      }, 2000);
+    chrome.storage.sync.set({ iocSelections: selections }, () => {
+      const savedMsg = document.createElement('div');
+      savedMsg.textContent = 'Preferences saved!';
+      savedMsg.style.color = 'green';
+      form.appendChild(savedMsg);
+      setTimeout(() => savedMsg.remove(), 2000);
     });
   });
 });
