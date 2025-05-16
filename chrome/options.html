@@ -1,107 +1,119 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset='UTF-8'>
-  <title>IOC Quickdraw Options</title>
+  <meta charset="UTF-8">
+  <title>IOC Quickdraw Loadout</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f5f5f5; }
-    h2 { color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
-    .group { margin-bottom: 20px; }
-    label { display: block; margin: 5px 0; }
-    button { padding: 10px 15px; font-size: 16px; }
+    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+    h2 { font-size: 24px; margin-bottom: 20px; }
+    .tool-group { background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+    .tool-group h3 { margin-top: 0; font-size: 18px; }
+    .checkbox-list label { display: block; margin: 5px 0; }
+    #saveBtn { margin-top: 10px; padding: 10px 20px; font-size: 16px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    #status { margin-left: 15px; font-style: italic; }
   </style>
 </head>
 <body>
-  <h1>IOC Quickdraw Loadout</h1>
-  <form id='options-form'>
-    <div class='group'>
-      <h2>IP</h2>
-      <label><input type='checkbox' id='IP_AbuseIPDB'> AbuseIPDB</label>
-      <label><input type='checkbox' id='IP_AlienVault_OTX'> AlienVault OTX</label>
-      <label><input type='checkbox' id='IP_ARIN'> ARIN</label>
-      <label><input type='checkbox' id='IP_Bad_Packets'> Bad Packets</label>
-      <label><input type='checkbox' id='IP_BlacklistMaster'> BlacklistMaster</label>
-      <label><input type='checkbox' id='IP_Censys'> Censys</label>
-      <label><input type='checkbox' id='IP_FortiGuard'> FortiGuard</label>
-      <label><input type='checkbox' id='IP_GreyNoise'> GreyNoise</label>
-      <label><input type='checkbox' id='IP_HackerTarget'> HackerTarget</label>
-      <label><input type='checkbox' id='IP_IPinfo'> IPinfo</label>
-      <label><input type='checkbox' id='IP_IPVoid'> IPVoid</label>
-      <label><input type='checkbox' id='IP_IP_Quality_Score'> IP Quality Score</label>
-      <label><input type='checkbox' id='IP_MX_Toolbox'> MX Toolbox</label>
-      <label><input type='checkbox' id='IP_Pulsedive'> Pulsedive</label>
-      <label><input type='checkbox' id='IP_Scamlytics'> Scamlytics</label>
-      <label><input type='checkbox' id='IP_SecurityTrails'> SecurityTrails</label>
-      <label><input type='checkbox' id='IP_Shodan'> Shodan</label>
-      <label><input type='checkbox' id='IP_Spur'> Spur</label>
-      <label><input type='checkbox' id='IP_Spyse'> Spyse</label>
-      <label><input type='checkbox' id='IP_Talos'> Talos</label>
-      <label><input type='checkbox' id='IP_ThreatCrowd'> ThreatCrowd</label>
-      <label><input type='checkbox' id='IP_ThreatMiner'> ThreatMiner</label>
-      <label><input type='checkbox' id='IP_TOR_Relay_Search'> TOR Relay Search</label>
-      <label><input type='checkbox' id='IP_URLhaus'> URLhaus</label>
-      <label><input type='checkbox' id='IP_VirusTotal'> VirusTotal</label>
-      <label><input type='checkbox' id='IP_X-Force'> X-Force</label>
+  <h2>🏹 IOC Quickdraw Loadout</h2>
+
+  <div class="tool-group" id="ip-tools">
+    <h3>IP Lookup Tools</h3>
+    <div class="checkbox-list">
+      <label><input type="checkbox" name="ipTool" value="AbuseIPDB"> AbuseIPDB</label>
+      <label><input type="checkbox" name="ipTool" value="AlienVault OTX"> AlienVault OTX</label>
+      <label><input type="checkbox" name="ipTool" value="ARIN"> ARIN</label>
+      <label><input type="checkbox" name="ipTool" value="Bad Packets"> Bad Packets</label>
+      <label><input type="checkbox" name="ipTool" value="BlacklistMaster"> BlacklistMaster</label>
+      <label><input type="checkbox" name="ipTool" value="Censys"> Censys</label>
+      <label><input type="checkbox" name="ipTool" value="GreyNoise"> GreyNoise</label>
+      <label><input type="checkbox" name="ipTool" value="IPinfo"> IPinfo</label>
+      <label><input type="checkbox" name="ipTool" value="IPVoid"> IPVoid</label>
+      <label><input type="checkbox" name="ipTool" value="IP Quality Score"> IP Quality Score</label>
+      <label><input type="checkbox" name="ipTool" value="MX Toolbox"> MX Toolbox</label>
+      <label><input type="checkbox" name="ipTool" value="Scamlytics"> Scamlytics</label>
+      <label><input type="checkbox" name="ipTool" value="Shodan"> Shodan</label>
+      <label><input type="checkbox" name="ipTool" value="Spur"> Spur</label>
+      <label><input type="checkbox" name="ipTool" value="Talos"> Talos</label>
+      <label><input type="checkbox" name="ipTool" value="ThreatMiner"> ThreatMiner</label>
+      <label><input type="checkbox" name="ipTool" value="URLhaus"> URLhaus</label>
+      <label><input type="checkbox" name="ipTool" value="VirusTotal"> VirusTotal</label>
+      <label><input type="checkbox" name="ipTool" value="X-Force"> X-Force</label>
     </div>
-    <div class='group'>
-      <h2>Domain</h2>
-      <label><input type='checkbox' id='Domain_Alexa'> Alexa</label>
-      <label><input type='checkbox' id='Domain_BlueCoat'> BlueCoat</label>
-      <label><input type='checkbox' id='Domain_Censys'> Censys</label>
-      <label><input type='checkbox' id='Domain_FortiGuard'> FortiGuard</label>
-      <label><input type='checkbox' id='Domain_host_io'> host.io</label>
-      <label><input type='checkbox' id='Domain_MX_Toolbox'> MX Toolbox</label>
-      <label><input type='checkbox' id='Domain_Pulsedive'> Pulsedive</label>
-      <label><input type='checkbox' id='Domain_SecurityTrails'> SecurityTrails</label>
-      <label><input type='checkbox' id='Domain_Shodan'> Shodan</label>
-      <label><input type='checkbox' id='Domain_Spyse'> Spyse</label>
-      <label><input type='checkbox' id='Domain_Talos'> Talos</label>
-      <label><input type='checkbox' id='Domain_ThreatCrowd'> ThreatCrowd</label>
-      <label><input type='checkbox' id='Domain_ThreatMiner'> ThreatMiner</label>
-      <label><input type='checkbox' id='Domain_TOR_Relay_Search'> TOR Relay Search</label>
-      <label><input type='checkbox' id='Domain_URLhaus'> URLhaus</label>
-      <label><input type='checkbox' id='Domain_VirusTotal'> VirusTotal</label>
-      <label><input type='checkbox' id='Domain_X-Force'> X-Force</label>
+  </div>
+
+  <div class="tool-group" id="domain-tools">
+    <h3>Domain Lookup Tools</h3>
+    <div class="checkbox-list">
+      <label><input type="checkbox" name="domainTool" value="BlueCoat"> BlueCoat</label>
+      <label><input type="checkbox" name="domainTool" value="Censys"> Censys</label>
+      <label><input type="checkbox" name="domainTool" value="FortiGuard"> FortiGuard</label>
+      <label><input type="checkbox" name="domainTool" value="host.io"> host.io</label>
+      <label><input type="checkbox" name="domainTool" value="MX Toolbox"> MX Toolbox</label>
+      <label><input type="checkbox" name="domainTool" value="Pulsedive"> Pulsedive</label>
+      <label><input type="checkbox" name="domainTool" value="SecurityTrails"> SecurityTrails</label>
+      <label><input type="checkbox" name="domainTool" value="Shodan"> Shodan</label>
+      <label><input type="checkbox" name="domainTool" value="Spyse"> Spyse</label>
+      <label><input type="checkbox" name="domainTool" value="Talos"> Talos</label>
+      <label><input type="checkbox" name="domainTool" value="ThreatCrowd"> ThreatCrowd</label>
+      <label><input type="checkbox" name="domainTool" value="ThreatMiner"> ThreatMiner</label>
+      <label><input type="checkbox" name="domainTool" value="TOR Relay Search"> TOR Relay Search</label>
+      <label><input type="checkbox" name="domainTool" value="URLhaus"> URLhaus</label>
+      <label><input type="checkbox" name="domainTool" value="VirusTotal"> VirusTotal</label>
+      <label><input type="checkbox" name="domainTool" value="X-Force"> X-Force</label>
     </div>
-    <div class='group'>
-      <h2>Hash</h2>
-      <label><input type='checkbox' id='Hash_AlienVault_OTX'> AlienVault OTX</label>
-      <label><input type='checkbox' id='Hash_Hybrid_Analysis'> Hybrid Analysis</label>
-      <label><input type='checkbox' id='Hash_Talos'> Talos</label>
-      <label><input type='checkbox' id='Hash_ThreatMiner'> ThreatMiner</label>
-      <label><input type='checkbox' id='Hash_URLhaus'> URLhaus</label>
-      <label><input type='checkbox' id='Hash_VirusTotal'> VirusTotal</label>
-      <label><input type='checkbox' id='Hash_X-Force'> X-Force</label>
+  </div>
+
+  <div class="tool-group" id="hash-tools">
+    <h3>File Hash Lookup Tools</h3>
+    <div class="checkbox-list">
+      <label><input type="checkbox" name="hashTool" value="AlienVault OTX"> AlienVault OTX</label>
+      <label><input type="checkbox" name="hashTool" value="Hybrid Analysis"> Hybrid Analysis</label>
+      <label><input type="checkbox" name="hashTool" value="Talos"> Talos</label>
+      <label><input type="checkbox" name="hashTool" value="ThreatMiner"> ThreatMiner</label>
+      <label><input type="checkbox" name="hashTool" value="URLhaus"> URLhaus</label>
+      <label><input type="checkbox" name="hashTool" value="VirusTotal"> VirusTotal</label>
+      <label><input type="checkbox" name="hashTool" value="X-Force"> X-Force</label>
     </div>
-    <div class='group'>
-      <h2>URL</h2>
-      <label><input type='checkbox' id='URL_Any_Run'> Any.Run</label>
-      <label><input type='checkbox' id='URL_BlueCoat'> BlueCoat</label>
-      <label><input type='checkbox' id='URL_Extract_Links'> Extract Links</label>
-      <label><input type='checkbox' id='URL_FortiGuard'> FortiGuard</label>
-      <label><input type='checkbox' id='URL_TrendMicro'> TrendMicro</label>
-      <label><input type='checkbox' id='URL_urlscan'> urlscan</label>
-      <label><input type='checkbox' id='URL_URLhaus'> URLhaus</label>
-      <label><input type='checkbox' id='URL_VirusTotal'> VirusTotal</label>
-      <label><input type='checkbox' id='URL_X-Force'> X-Force</label>
-      <label><input type='checkbox' id='URL_Zscaler'> Zscaler</label>
+  </div>
+
+  <div class="tool-group" id="url-tools">
+    <h3>URL Lookup Tools</h3>
+    <div class="checkbox-list">
+      <label><input type="checkbox" name="urlTool" value="Any.Run"> Any.Run</label>
+      <label><input type="checkbox" name="urlTool" value="BlueCoat"> BlueCoat</label>
+      <label><input type="checkbox" name="urlTool" value="Extract Links"> Extract Links</label>
+      <label><input type="checkbox" name="urlTool" value="FortiGuard"> FortiGuard</label>
+      <label><input type="checkbox" name="urlTool" value="TrendMicro"> TrendMicro</label>
+      <label><input type="checkbox" name="urlTool" value="URLScan"> URLScan</label>
+      <label><input type="checkbox" name="urlTool" value="URLhaus"> URLhaus</label>
+      <label><input type="checkbox" name="urlTool" value="VirusTotal"> VirusTotal</label>
+      <label><input type="checkbox" name="urlTool" value="X-Force"> X-Force</label>
+      <label><input type="checkbox" name="urlTool" value="Zscaler"> Zscaler</label>
     </div>
-    <div class='group'>
-      <h2>Email</h2>
-      <label><input type='checkbox' id='Email_ICANN_WHOIS_Lookup'> ICANN WHOIS Lookup</label>
-      <label><input type='checkbox' id='Email_Have_I_Been_Pwned'> Have I Been Pwned</label>
-      <label><input type='checkbox' id='Email_MXToolbox'> MXToolbox</label>
+  </div>
+
+  <div class="tool-group" id="email-tools">
+    <h3>Email Lookup Tools</h3>
+    <div class="checkbox-list">
+      <label><input type="checkbox" name="emailTool" value="ICANN WHOIS Lookup"> ICANN WHOIS Lookup</label>
+      <label><input type="checkbox" name="emailTool" value="Have I Been Pwned"> Have I Been Pwned</label>
+      <label><input type="checkbox" name="emailTool" value="MXToolbox"> MXToolbox</label>
     </div>
-    <div class='group'>
-      <h2>Sandbox</h2>
-      <label><input type='checkbox' id='Sandbox_ANY_RUN'> ANY.RUN</label>
-      <label><input type='checkbox' id='Sandbox_Browserling'> Browserling</label>
-      <label><input type='checkbox' id='Sandbox_Joe_Sandbox'> Joe Sandbox</label>
-      <label><input type='checkbox' id='Sandbox_SiteShot'> SiteShot</label>
-      <label><input type='checkbox' id='Sandbox_urlscan'> urlscan</label>
+  </div>
+
+  <div class="tool-group" id="sandbox-tools">
+    <h3>Sandbox Tools</h3>
+    <div class="checkbox-list">
+      <label><input type="checkbox" name="sandboxTool" value="ANY.RUN"> ANY.RUN</label>
+      <label><input type="checkbox" name="sandboxTool" value="Browserling"> Browserling</label>
+      <label><input type="checkbox" name="sandboxTool" value="Joe Sandbox"> Joe Sandbox</label>
+      <label><input type="checkbox" name="sandboxTool" value="SiteShot"> SiteShot</label>
+      <label><input type="checkbox" name="sandboxTool" value="URLScan"> URLScan</label>
     </div>
-    <button type='submit'>Save Preferences</button>
-  </form>
-  <script src='options.js'></script>
+  </div>
+
+  <button id="saveBtn">💾 Save Preferences</button><span id="status"></span>
+  <script src="options.js"></script>
 </body>
 </html>

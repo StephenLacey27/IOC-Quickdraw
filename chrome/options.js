@@ -1,31 +1,26 @@
 
 document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('options-form');
-  const checkboxes = Array.from(form.querySelectorAll('input[type="checkbox"]'));
-
+  const types = ['ip', 'domain', 'hash', 'url', 'email', 'sandbox'];
   // Load saved settings
-  chrome.storage.sync.get('iocSelections', (data) => {
-    const saved = data.iocSelections || {};
-    checkboxes.forEach(box => {
-      if (saved[box.id]) {
-        box.checked = true;
-      }
+  types.forEach(type => {
+    chrome.storage.sync.get([type + 'Tools'], data => {
+      const list = data[type + 'Tools'] || [];
+      list.forEach(tool => {
+        const checkbox = document.querySelector(`input[name="${type}Tool"][value="${tool}"]`);
+        if (checkbox) checkbox.checked = true;
+      });
     });
   });
 
-  // Save settings
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const selections = {};
-    checkboxes.forEach(box => {
-      selections[box.id] = box.checked;
+  // Save on button click
+  document.getElementById('saveBtn').addEventListener('click', () => {
+    types.forEach(type => {
+      const checked = Array.from(document.querySelectorAll(`input[name="${type}Tool"]:checked`))
+                           .map(cb => cb.value);
+      chrome.storage.sync.set({ [type + 'Tools']: checked });
     });
-    chrome.storage.sync.set({ iocSelections: selections }, () => {
-      const savedMsg = document.createElement('div');
-      savedMsg.textContent = 'Preferences saved!';
-      savedMsg.style.color = 'green';
-      form.appendChild(savedMsg);
-      setTimeout(() => savedMsg.remove(), 2000);
-    });
+    const status = document.getElementById('status');
+    status.textContent = 'Settings saved!';
+    setTimeout(() => { status.textContent = ''; }, 1500);
   });
 });

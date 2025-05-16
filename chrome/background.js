@@ -1,154 +1,140 @@
+
+// background.js for IOC Quickdraw
+
+const TOOL_URLS = {
+  ip: {
+    "AbuseIPDB": "https://www.abuseipdb.com/check/{{ioc}}",
+    "AlienVault OTX": "https://otx.alienvault.com/indicator/ip/{{ioc}}",
+    "ARIN": "https://search.arin.net/rdap/?query={{ioc}}",
+    "Bad Packets": "https://api.badpackets.net/ip/{{ioc}}",
+    "BlacklistMaster": "https://www.blacklistmaster.com/?q={{ioc}}",
+    "Censys": "https://search.censys.io/hosts/{{ioc}}",
+    "GreyNoise": "https://viz.greynoise.io/ip/{{ioc}}",
+    "IPinfo": "https://ipinfo.io/{{ioc}}",
+    "IPVoid": "https://www.ipvoid.com/ip-blacklist-check/?ip={{ioc}}",
+    "IP Quality Score": "https://www.ipqualityscore.com/free-ip-lookup-proxy-vpn-test/lookup/{{ioc}}",
+    "MX Toolbox": "https://mxtoolbox.com/SuperTool.aspx?action=ip%3A{{ioc}}",
+    "Scamlytics": "https://scamlytics.com/ip/{{ioc}}",
+    "Shodan": "https://www.shodan.io/host/{{ioc}}",
+    "Spur": "https://spur.us/context/{{ioc}}",
+    "Talos": "https://talosintelligence.com/reputation_center/lookup?search={{ioc}}",
+    "ThreatMiner": "https://www.threatminer.org/host.php?q={{ioc}}",
+    "URLhaus": "https://urlhaus.abuse.ch/browse.php?search={{ioc}}",
+    "VirusTotal": "https://www.virustotal.com/gui/ip-address/{{ioc}}",
+    "X-Force": "https://exchange.xforce.ibmcloud.com/ip/{{ioc}}"
+  },
+  domain: {
+    "BlueCoat": "https://sitereview.bluecoat.com/#/lookup?url={{ioc}}",
+    "Censys": "https://search.censys.io/hosts/{{ioc}}",
+    "FortiGuard": "https://www.fortiguard.com/search?query={{ioc}}",
+    "host.io": "https://host.io/domain/{{ioc}}",
+    "MX Toolbox": "https://mxtoolbox.com/SuperTool.aspx?action=domain%3A{{ioc}}",
+    "Pulsedive": "https://pulsedive.com/indicator/domain/{{ioc}}",
+    "SecurityTrails": "https://securitytrails.com/domain/{{ioc}}/historical",
+    "Shodan": "https://www.shodan.io/search?query=hostname:{{ioc}}",
+    "Spyse": "https://spyse.com/domain/{{ioc}}",
+    "Talos": "https://talosintelligence.com/reputation_center/lookup?search={{ioc}}",
+    "ThreatCrowd": "https://www.threatcrowd.org/domain.php?domain={{ioc}}",
+    "ThreatMiner": "https://www.threatminer.org/domain.php?q={{ioc}}",
+    "TOR Relay Search": "https://metrics.torproject.org/rs.html#search/{{ioc}}",
+    "URLhaus": "https://urlhaus.abuse.ch/browse.php?search={{ioc}}",
+    "VirusTotal": "https://www.virustotal.com/gui/domain/{{ioc}}",
+    "X-Force": "https://exchange.xforce.ibmcloud.com/url/{{ioc}}"
+  },
+  hash: {
+    "AlienVault OTX": "https://otx.alienvault.com/indicator/file/{{ioc}}",
+    "Hybrid Analysis": "https://www.hybrid-analysis.com/sample/{{ioc}}",
+    "Talos": "https://talosintelligence.com/reputation_center/lookup?search={{ioc}}",
+    "ThreatMiner": "https://www.threatminer.org/file.php?q={{ioc}}",
+    "URLhaus": "https://urlhaus.abuse.ch/browse.php?search={{ioc}}",
+    "VirusTotal": "https://www.virustotal.com/gui/file/{{ioc}}",
+    "X-Force": "https://exchange.xforce.ibmcloud.com/file/{{ioc}}"
+  },
+  url: {
+    "Any.Run": "https://app.any.run/tasks?url={{ioc}}",
+    "BlueCoat": "https://sitereview.bluecoat.com/#/lookup?url={{ioc}}",
+    "Extract Links": "https://extracturls.com/?url={{ioc}}",
+    "FortiGuard": "https://www.fortiguard.com/search?query={{ioc}}",
+    "TrendMicro": "https://global.sitesafety.trendmicro.com/index?url={{ioc}}",
+    "URLScan": "https://urlscan.io/search/#{{ioc}}",
+    "URLhaus": "https://urlhaus.abuse.ch/browse.php?search={{ioc}}",
+    "VirusTotal": "https://www.virustotal.com/gui/url/{{ioc}}",
+    "X-Force": "https://exchange.xforce.ibmcloud.com/url/{{ioc}}",
+    "Zscaler": "https://zulu.zscaler.com/?url={{ioc}}"
+  },
+  email: {
+    "ICANN WHOIS Lookup": "https://lookup.icann.org/?name={{ioc}}",
+    "Have I Been Pwned": "https://haveibeenpwned.com/unifiedsearch/{{ioc}}",
+    "MXToolbox": "https://mxtoolbox.com/SuperTool.aspx?action=email%3A{{ioc}}"
+  },
+  sandbox: {
+    "ANY.RUN": "https://app.any.run/tasks?url={{ioc}}",
+    "Browserling": "https://www.browserling.com/tools/screenshot?url={{ioc}}",
+    "Joe Sandbox": "https://www.joesandbox.com/analysis/{{ioc}}",
+    "SiteShot": "https://screenshot.site/?url={{ioc}}",
+    "URLScan": "https://urlscan.io/search/#{{ioc}}"
+  }
+};
+
+const contextTypes = {
+  ip: 'IP Lookup',
+  domain: 'Domain Lookup',
+  url: 'URL Lookup',
+  hash: 'Hash Lookup',
+  email: 'Email Lookup',
+  sandbox: 'Sandbox Analysis'
+};
+
 chrome.runtime.onInstalled.addListener(() => {
-  // IP sources
-  chrome.contextMenus.create({ id: 'IP', title: 'IP', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_AbuseIPDB', parentId: 'IP', title: 'AbuseIPDB', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_AlienVault_OTX', parentId: 'IP', title: 'AlienVault OTX', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_ARIN', parentId: 'IP', title: 'ARIN', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_Bad_Packets', parentId: 'IP', title: 'Bad Packets', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_BlacklistMaster', parentId: 'IP', title: 'BlacklistMaster', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_Censys', parentId: 'IP', title: 'Censys', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_FortiGuard', parentId: 'IP', title: 'FortiGuard', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_GreyNoise', parentId: 'IP', title: 'GreyNoise', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_HackerTarget', parentId: 'IP', title: 'HackerTarget', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_IPinfo', parentId: 'IP', title: 'IPinfo', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_IPVoid', parentId: 'IP', title: 'IPVoid', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_IP_Quality_Score', parentId: 'IP', title: 'IP Quality Score', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_MX_Toolbox', parentId: 'IP', title: 'MX Toolbox', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_Pulsedive', parentId: 'IP', title: 'Pulsedive', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_Scamlytics', parentId: 'IP', title: 'Scamlytics', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_SecurityTrails', parentId: 'IP', title: 'SecurityTrails', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_Shodan', parentId: 'IP', title: 'Shodan', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_Spur', parentId: 'IP', title: 'Spur', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_Spyse', parentId: 'IP', title: 'Spyse', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_Talos', parentId: 'IP', title: 'Talos', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_ThreatCrowd', parentId: 'IP', title: 'ThreatCrowd', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_ThreatMiner', parentId: 'IP', title: 'ThreatMiner', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_TOR_Relay_Search', parentId: 'IP', title: 'TOR Relay Search', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_URLhaus', parentId: 'IP', title: 'URLhaus', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_VirusTotal', parentId: 'IP', title: 'VirusTotal', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'IP_X-Force', parentId: 'IP', title: 'X-Force', contexts: ['selection'] });
-  // Domain sources
-  chrome.contextMenus.create({ id: 'Domain', title: 'Domain', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_Alexa', parentId: 'Domain', title: 'Alexa', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_BlueCoat', parentId: 'Domain', title: 'BlueCoat', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_Censys', parentId: 'Domain', title: 'Censys', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_FortiGuard', parentId: 'Domain', title: 'FortiGuard', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_host_io', parentId: 'Domain', title: 'host.io', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_MX_Toolbox', parentId: 'Domain', title: 'MX Toolbox', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_Pulsedive', parentId: 'Domain', title: 'Pulsedive', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_SecurityTrails', parentId: 'Domain', title: 'SecurityTrails', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_Shodan', parentId: 'Domain', title: 'Shodan', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_Spyse', parentId: 'Domain', title: 'Spyse', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_Talos', parentId: 'Domain', title: 'Talos', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_ThreatCrowd', parentId: 'Domain', title: 'ThreatCrowd', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_ThreatMiner', parentId: 'Domain', title: 'ThreatMiner', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_TOR_Relay_Search', parentId: 'Domain', title: 'TOR Relay Search', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_URLhaus', parentId: 'Domain', title: 'URLhaus', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_VirusTotal', parentId: 'Domain', title: 'VirusTotal', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Domain_X-Force', parentId: 'Domain', title: 'X-Force', contexts: ['selection'] });
-  // Hash sources
-  chrome.contextMenus.create({ id: 'Hash', title: 'Hash', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Hash_AlienVault_OTX', parentId: 'Hash', title: 'AlienVault OTX', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Hash_Hybrid_Analysis', parentId: 'Hash', title: 'Hybrid Analysis', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Hash_Talos', parentId: 'Hash', title: 'Talos', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Hash_ThreatMiner', parentId: 'Hash', title: 'ThreatMiner', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Hash_URLhaus', parentId: 'Hash', title: 'URLhaus', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Hash_VirusTotal', parentId: 'Hash', title: 'VirusTotal', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Hash_X-Force', parentId: 'Hash', title: 'X-Force', contexts: ['selection'] });
-  // URL sources
-  chrome.contextMenus.create({ id: 'URL', title: 'URL', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'URL_Any_Run', parentId: 'URL', title: 'Any.Run', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'URL_BlueCoat', parentId: 'URL', title: 'BlueCoat', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'URL_Extract_Links', parentId: 'URL', title: 'Extract Links', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'URL_FortiGuard', parentId: 'URL', title: 'FortiGuard', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'URL_TrendMicro', parentId: 'URL', title: 'TrendMicro', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'URL_urlscan', parentId: 'URL', title: 'urlscan', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'URL_URLhaus', parentId: 'URL', title: 'URLhaus', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'URL_VirusTotal', parentId: 'URL', title: 'VirusTotal', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'URL_X-Force', parentId: 'URL', title: 'X-Force', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'URL_Zscaler', parentId: 'URL', title: 'Zscaler', contexts: ['selection'] });
-  // Email sources
-  chrome.contextMenus.create({ id: 'Email', title: 'Email', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Email_ICANN_WHOIS_Lookup', parentId: 'Email', title: 'ICANN WHOIS Lookup', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Email_Have_I_Been_Pwned', parentId: 'Email', title: 'Have I Been Pwned', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Email_MXToolbox', parentId: 'Email', title: 'MXToolbox', contexts: ['selection'] });
-  // Sandbox sources
-  chrome.contextMenus.create({ id: 'Sandbox', title: 'Sandbox', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Sandbox_ANY_RUN', parentId: 'Sandbox', title: 'ANY.RUN', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Sandbox_Browserling', parentId: 'Sandbox', title: 'Browserling', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Sandbox_Joe_Sandbox', parentId: 'Sandbox', title: 'Joe Sandbox', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Sandbox_SiteShot', parentId: 'Sandbox', title: 'SiteShot', contexts: ['selection'] });
-  chrome.contextMenus.create({ id: 'Sandbox_urlscan', parentId: 'Sandbox', title: 'urlscan', contexts: ['selection'] });
+  chrome.contextMenus.removeAll(() => {
+    for (const type in contextTypes) {
+      // Parent menu without emoji
+      chrome.contextMenus.create({
+        id: type,
+        title: contextTypes[type],
+        contexts: ['selection']
+      });
+      // Quickdraw with bow emoji
+      chrome.contextMenus.create({
+        id: `${type}_quickdraw`,
+        parentId: type,
+        title: '🏹 Quickdraw',
+        contexts: ['selection']
+      });
+      // Individual tools
+      for (const toolName in TOOL_URLS[type]) {
+        chrome.contextMenus.create({
+          id: `${type}_${toolName}`,
+          parentId: type,
+          title: toolName,
+          contexts: ['selection']
+        });
+      }
+    }
+  });
 });
 
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-  const ioc = info.selectionText.trim();
-  if (info.menuItemId === 'IP_AbuseIPDB') chrome.tabs.create({ url: 'https://www.abuseipdb.com/check/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_AlienVault_OTX') chrome.tabs.create({ url: 'https://otx.alienvault.com/indicator/ip/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_ARIN') chrome.tabs.create({ url: 'https://search.arin.net/rdap/?query=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_Bad_Packets') chrome.tabs.create({ url: 'https://mirai.badpackets.net/?source_ip_address=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_BlacklistMaster') chrome.tabs.create({ url: 'https://blacklistmaster.com/?search=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_Censys') chrome.tabs.create({ url: 'https://search.censys.io/hosts/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_FortiGuard') chrome.tabs.create({ url: 'https://fortiguard.com/search?q=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_GreyNoise') chrome.tabs.create({ url: 'https://viz.greynoise.io/ip/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_HackerTarget') chrome.tabs.create({ url: 'https://hackertarget.com/ip-tools/?q=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_IPinfo') chrome.tabs.create({ url: 'https://ipinfo.io/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_IPVoid') chrome.tabs.create({ url: 'https://www.ipvoid.com/ip/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_IP_Quality_Score') chrome.tabs.create({ url: 'https://www.ipqualityscore.com/free-ip-lookup-proxy-vpn-test/lookup/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_MX_Toolbox') chrome.tabs.create({ url: 'https://mxtoolbox.com/SuperTool.aspx?action=blacklist%3a' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_Pulsedive') chrome.tabs.create({ url: 'https://pulsedive.com/indicator/?ioc=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_Scamlytics') chrome.tabs.create({ url: 'https://scamalytics.com/ip/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_SecurityTrails') chrome.tabs.create({ url: 'https://securitytrails.com/list/ip/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_Shodan') chrome.tabs.create({ url: 'https://www.shodan.io/host/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_Spur') chrome.tabs.create({ url: 'https://spur.us/#/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_Spyse') chrome.tabs.create({ url: 'https://spyse.com/target/ip/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_Talos') chrome.tabs.create({ url: 'https://talosintelligence.com/reputation_center/lookup?search=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_ThreatCrowd') chrome.tabs.create({ url: 'https://www.threatcrowd.org/ip.php?ip=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_ThreatMiner') chrome.tabs.create({ url: 'https://www.threatminer.org/host.php?q=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_TOR_Relay_Search') chrome.tabs.create({ url: 'https://metrics.torproject.org/rs.html#search/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_URLhaus') chrome.tabs.create({ url: 'https://urlhaus.abuse.ch/browse.php?search=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_VirusTotal') chrome.tabs.create({ url: 'https://www.virustotal.com/gui/ip-address/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'IP_X-Force') chrome.tabs.create({ url: 'https://exchange.xforce.ibmcloud.com/ip/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_Alexa') chrome.tabs.create({ url: 'https://www.alexa.com/siteinfo/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_BlueCoat') chrome.tabs.create({ url: 'https://sitereview.bluecoat.com/#/lookup-result/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_Censys') chrome.tabs.create({ url: 'https://search.censys.io/domain/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_FortiGuard') chrome.tabs.create({ url: 'https://fortiguard.com/search?q=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_host_io') chrome.tabs.create({ url: 'https://host.io/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_MX_Toolbox') chrome.tabs.create({ url: 'https://mxtoolbox.com/SuperTool.aspx?action=a%3a' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_Pulsedive') chrome.tabs.create({ url: 'https://pulsedive.com/indicator/?ioc=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_SecurityTrails') chrome.tabs.create({ url: 'https://securitytrails.com/domain/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_Shodan') chrome.tabs.create({ url: 'https://www.shodan.io/search?query=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_Spyse') chrome.tabs.create({ url: 'https://spyse.com/target/domain/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_Talos') chrome.tabs.create({ url: 'https://talosintelligence.com/reputation_center/lookup?search=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_ThreatCrowd') chrome.tabs.create({ url: 'https://www.threatcrowd.org/domain.php?domain=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_ThreatMiner') chrome.tabs.create({ url: 'https://www.threatminer.org/domain.php?q=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_TOR_Relay_Search') chrome.tabs.create({ url: 'https://metrics.torproject.org/rs.html#search/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_URLhaus') chrome.tabs.create({ url: 'https://urlhaus.abuse.ch/browse.php?search=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_VirusTotal') chrome.tabs.create({ url: 'https://www.virustotal.com/gui/domain/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Domain_X-Force') chrome.tabs.create({ url: 'https://exchange.xforce.ibmcloud.com/url/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Hash_AlienVault_OTX') chrome.tabs.create({ url: 'https://otx.alienvault.com/indicator/file/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Hash_Hybrid_Analysis') chrome.tabs.create({ url: 'https://www.hybrid-analysis.com/search?query=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Hash_Talos') chrome.tabs.create({ url: 'https://talosintelligence.com/talos_file_reputation/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Hash_ThreatMiner') chrome.tabs.create({ url: 'https://www.threatminer.org/sample.php?q=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Hash_URLhaus') chrome.tabs.create({ url: 'https://urlhaus.abuse.ch/browse.php?search=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Hash_VirusTotal') chrome.tabs.create({ url: 'https://www.virustotal.com/gui/file/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Hash_X-Force') chrome.tabs.create({ url: 'https://exchange.xforce.ibmcloud.com/malware/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'URL_Any_Run') chrome.tabs.create({ url: 'https://any.run' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'URL_BlueCoat') chrome.tabs.create({ url: 'https://sitereview.bluecoat.com/#/lookup-result/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'URL_Extract_Links') chrome.tabs.create({ url: 'https://www.hackertarget.com/extract-links/?q=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'URL_FortiGuard') chrome.tabs.create({ url: 'https://fortiguard.com/search?q=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'URL_TrendMicro') chrome.tabs.create({ url: 'https://global.sitesafety.trendmicro.com/result.php?url=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'URL_urlscan') chrome.tabs.create({ url: 'https://urlscan.io/result/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'URL_URLhaus') chrome.tabs.create({ url: 'https://urlhaus.abuse.ch/url/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'URL_VirusTotal') chrome.tabs.create({ url: 'https://www.virustotal.com/gui/url/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'URL_X-Force') chrome.tabs.create({ url: 'https://exchange.xforce.ibmcloud.com/url/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'URL_Zscaler') chrome.tabs.create({ url: 'https://zulu.zscaler.com/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Email_ICANN_WHOIS_Lookup') chrome.tabs.create({ url: 'https://lookup.icann.org/en/lookup?searchType=email&searchTerm=' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Email_Have_I_Been_Pwned') chrome.tabs.create({ url: 'https://haveibeenpwned.com/unifiedsearch/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Email_MXToolbox') chrome.tabs.create({ url: 'https://mxtoolbox.com/EmailHeaders.aspx' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Sandbox_ANY_RUN') chrome.tabs.create({ url: 'https://any.run' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Sandbox_Browserling') chrome.tabs.create({ url: 'https://www.browserling.com/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Sandbox_Joe_Sandbox') chrome.tabs.create({ url: 'https://www.joesandbox.com/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Sandbox_SiteShot') chrome.tabs.create({ url: 'https://www.screenshotmachine.com/' + encodeURIComponent(ioc) + '' });
-  if (info.menuItemId === 'Sandbox_urlscan') chrome.tabs.create({ url: 'https://urlscan.io/' + encodeURIComponent(ioc) + '' });
+chrome.contextMenus.onClicked.addListener((info) => {
+  const { menuItemId, selectionText } = info;
+  if (!selectionText) return;
+  const text = selectionText.trim();
+  const [type, action] = menuItemId.split(/_(.+)/); // split only first underscore
+  if (action === 'quickdraw') {
+    chrome.storage.sync.get(`${type}Tools`, data => {
+      const list = data[`${type}Tools`] || [];
+      list.forEach(toolName => {
+        const template = TOOL_URLS[type][toolName];
+        if (template) {
+          const url = template.replace('{{ioc}}', encodeURIComponent(text));
+          chrome.tabs.create({ url });
+        }
+      });
+    });
+  } else {
+    const template = TOOL_URLS[type][action];
+    if (template) {
+      const url = template.replace('{{ioc}}', encodeURIComponent(text));
+      chrome.tabs.create({ url });
+    }
+  }
 });
