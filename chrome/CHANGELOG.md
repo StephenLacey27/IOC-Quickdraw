@@ -1,6 +1,12 @@
 
 # Changelog
 
+## [1.3.1] – 2025-05-15
+
+### Fixed
+- Removed unnecessary `"tabs"` permission to comply with Chrome Web Store policy.
+
+
 ## [1.3.0] – 2025-05-15
 
 ### Added
